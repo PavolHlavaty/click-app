@@ -1,0 +1,45 @@
+.leaderboard-table {
+  align-self: stretch;
+
+  th {
+    color: grey;
+    font-size: 12px;
+  }
+
+  tbody>tr {
+    font-size: 14px;
+    font-weight: bold;
+
+    &:nth-child(odd) {
+      background-color: #ecf3fd;
+    }
+
+    &:nth-child(even) {
+      background-color: #dce9fa;
+    }
+  }
+
+  td,
+  th {
+    padding: 5px 10px;
+
+    &:nth-child(2) {
+      text-align: left;
+    }
+
+    &:nth-child(3) {
+      text-align: right;
+    }
+  }
+
+  .highlight {
+    background-color: #468de0 !important;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+
+    td {
+      padding: 10px;
+    }
+  }
+}
