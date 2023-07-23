@@ -85,7 +85,7 @@ export class TeamsService {
       teamId,
     });
 
-    return totalClicks;
+    return totalClicks || 0;
   }
 
   async addClickAndGetStats(
@@ -97,15 +97,30 @@ export class TeamsService {
     return new AddClickResponseDto(usersClickHistory.clickCount, totalClicks);
   }
 
-  async getUsersClicksPerTeam(teamId: number, userId: number): Promise<number> {
-    const clickHistory = await this.clickHistoryRepository.findOne({
-      where: { teamId, userId },
+  async getTeamDetail(
+    teamName: string,
+    userId: number,
+  ): Promise<TeamEntity & { totalClicks: number; usersClickCount: number }> {
+    const team = await this.teamsRepository.findOne({
+      where: { name: teamName },
     });
 
-    if (!clickHistory) {
-      return 0;
+    if (!team) {
+      throw new BadRequestException('Team does not exist');
     }
 
-    return clickHistory.clickCount;
+    // get users click count for the team
+    const clickHistory = await this.clickHistoryRepository.findOne({
+      where: { teamId: team.id, userId },
+    });
+
+    // get total clicks for the team
+    const totalClicks = await this.getTotalClicksPerTeam(team.id);
+
+    return {
+      ...team,
+      totalClicks,
+      usersClickCount: clickHistory?.clickCount || 0,
+    };
   }
 }

@@ -7,8 +7,9 @@ import { GetLeaderBoardResponseDto } from './dto/get-leaderboard-response.dto';
 import { User } from 'src/auth/decorators/user.decorator';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { AddClickResponseDto } from './dto/add-click-response.dto';
-import { GetMyClicksResponseDto } from './dto/get-my-clicks-response.dto';
+import { GetTeamDetailResponseDto } from './dto/get-team-detail-response.dto';
 import { TeamIdParamDto } from './dto/team-id-param.dto';
+import { TeamNameParamDto } from './dto/team-name-param.dto';
 
 @Controller()
 export class TeamsController {
@@ -40,13 +41,15 @@ export class TeamsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':teamId/my-clicks')
-  async getMyClicks(@Param() params: TeamIdParamDto, @User() user: UserEntity) {
-    console.log(params, params.teamId);
-    const usersClickCount = await this.teamsService.getUsersClicksPerTeam(
-      params.teamId,
+  @Get('team/:teamName')
+  async getTeamDetail(
+    @Param() params: TeamNameParamDto,
+    @User() user: UserEntity,
+  ) {
+    const teamDetail = await this.teamsService.getTeamDetail(
+      params.teamName,
       user.id,
     );
-    return new GetMyClicksResponseDto(usersClickCount);
+    return new GetTeamDetailResponseDto(teamDetail);
   }
 }
