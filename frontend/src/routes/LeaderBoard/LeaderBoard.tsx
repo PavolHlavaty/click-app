@@ -17,30 +17,36 @@ function LeaderBoard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getLeaderBoard()
-      .then((data) => {
-        setLeaderBoard(data);
-      })
-      .catch((error) => {
-        console.error(error);
-        // TODO show error message
-      });
+    fetchLeaderBoard();
   }, []);
+
+  const fetchLeaderBoard = async () => {
+    try {
+      const data = await getLeaderBoard();
+      setLeaderBoard(data);
+    } catch (error) {
+      console.error(error);
+      // TODO show error message
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createTeam(teamName)
-      .then((data) => {
-        navigate(`/${data.name}`);
-      })
-      .catch((error) => {
-        // If team already exists, navigate to team page (409 = conflict)
-        if (error.response.status === 409) {
-          navigate(`/${teamName}`);
-        }
-        console.error(error);
-        // TODO show error message
-      });
+    createTeamHandler(teamName);
+  };
+
+  const createTeamHandler = async (teamName: string) => {
+    try {
+      const data = await createTeam(teamName);
+      navigate(`/${data.name}`);
+    } catch (error) {
+      // If team already exists, navigate to team page (409 = conflict)
+      if ((error as any).response.status === 409) {
+        navigate(`/${teamName}`);
+      }
+      console.error(error);
+      // TODO show error message
+    }
   };
 
   return (

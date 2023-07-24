@@ -15,43 +15,49 @@ import LeaderBoardTable from '../../components/LeaderBoardTable/LeaderBoardTable
 function TeamDetail() {
   const [leaderBoard, setLeaderBoard] = useState<GetLeaderBoardResponseDto>([]);
   const [teamDetail, setTeamDetail] = useState<GetTeamDetailResponseDto | null>(null);
-  const [refresh, setRefresh] = useState<boolean>(false);
 
   const { teamName } = useParams<{ teamName: string }>();
 
   useEffect(() => {
-    getLeaderBoard()
-      .then((data) => {
-        setLeaderBoard(data);
-      })
-      .catch((error) => {
-        console.error(error);
-        // TODO show error message
-      });
-  }, [refresh]);
+    fetchLeaderBoard();
+  }, []);
+
+  const fetchLeaderBoard = async () => {
+    try {
+      const data = await getLeaderBoard();
+      setLeaderBoard(data);
+    } catch (error) {
+      console.error(error);
+      // TODO show error message
+    }
+  };
 
   useEffect(() => {
-    // we use this component only as a Route component, so we can safely assume that teamName is not undefined
-    getTeamDetail(teamName!)
-      .then((data) => {
-        setTeamDetail(data);
-      })
-      .catch((error) => {
-        console.error(error);
-        // TODO show error message
-      });
-  }, [teamName, refresh]);
+    fetchTeamDetail();
+  }, [teamName]);
 
-  const handleClick = () => {
-    // we render button only when teamDetail is not null, so we can safely assume that teamDetail is not null
-    addClick(teamDetail!.id)
-      .then(() => {
-        setRefresh(!refresh);
-      })
-      .catch((error) => {
-        console.error(error);
-        // TODO show error message
-      });
+  const fetchTeamDetail = async () => {
+    try {
+      // we use this component only as a Route component, so we can safely assume that teamName is not undefined
+      const data = await getTeamDetail(teamName!);
+      setTeamDetail(data);
+    } catch (error) {
+      console.error(error);
+      // TODO show error message
+    }
+  };
+
+  const handleClick = async () => {
+    try {
+      // we render button only when teamDetail is not null, so we can safely assume that teamDetail is not null
+      await addClick(teamDetail!.id);
+      // refetch data
+      fetchTeamDetail();
+      fetchLeaderBoard();
+    } catch (error) {
+      console.error(error);
+      // TODO show error message
+    }
   };
 
   return (

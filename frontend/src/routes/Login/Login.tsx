@@ -13,15 +13,18 @@ function Login() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    login(email, password)
-      .then((response) => {
-        localStorage.setItem('token', response.accessToken);
-        navigate('/');
-      })
-      .catch((error) => {
-        console.error(error);
-        // TODO show error message
-      });
+    loginHandler(email, password);
+  };
+
+  const loginHandler = async (email: string, password: string) => {
+    try {
+      const loginResponse = await login(email, password);
+      localStorage.setItem('token', loginResponse.accessToken);
+      navigate('/');
+    } catch (error) {
+      console.error(error);
+      // TODO show error message
+    }
   };
 
   return (
